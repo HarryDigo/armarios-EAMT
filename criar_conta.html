@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Criar conta</title>
+        <style>
+            @import url(style.css);
+        </style>
+        <script src="script.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="center" style="width: 25%;">
+            <div class="container caixa">
+                <div style="padding-left: 30px; padding-right: 30px;">
+
+                    <div style="text-align: center;">
+                        <h1>Armários</h1>
+                    </div>
+
+                    <hr>
+
+                    <div class="linha" style="text-align: center;">
+                        <h2>Criação de conta</h2>
+                    </div>
+
+                    <div class="horizontal_center">
+                        <div class="linha">
+                            <span class="label">RM: </span>
+                            <input type="text" id="rm_usuario">
+                        </div>
+                    </div>
+
+                    <div class="horizontal_center">
+                        <div class="linha">
+                            <span class="label">Senha: </span>
+                            <input type="password" id="senha_usuario">
+                        </div>
+                    </div>
+
+                    <div class="linha horizontal_center">
+                        <input type="button" value="Criar conta" class="botao" onclick="createUser()">
+                    </div>
+
+                    <div class="horizontal_center">
+                        <div>
+                            <span class="mensagem">Se já tem uma conta, entre aqui: </span> <a class="mensagem" href="login.html">Login</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div style="margin-top:10px">
+                <span class="mensagem" id="mensagem_erro" style="margin-left: 30px; opacity: 0.7; color: #ff4b4b;visibility: hidden;">Esta conta já existe, tente novamente.</span>
+            </div>
+
+        </div>
+
+        <a href="index.html"><button>amogus</button></a>
+        <button onclick="localStorage.clear()">clear</button>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    </body>
+</html>
