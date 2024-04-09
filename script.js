@@ -16,6 +16,11 @@ function createUser() {
         localStorage.setItem("user_amount", 0);
         aux = 0;
     }
+    if (rm.length == 0 || password.length == 0) {
+        document.getElementById("mensagem_erro").innerHTML = "RM e/ou senha inválido, tente novamente";
+        document.getElementById("mensagem_erro").style.visibility = "visible";
+        return;
+    }
     if (password.length < 4) {
         document.getElementById("mensagem_erro").innerHTML = "Senha deve ter mais de 3 caracteres";
         document.getElementById("mensagem_erro").style.visibility = "visible";
@@ -38,6 +43,11 @@ function logIn() {
     let rm = document.getElementById("rm_usuario").value;
     let password = document.getElementById("senha_usuario").value;
     let current_user = locateUser(rm);
+    if (rm.length == 0 || password.length == 0) {
+        document.getElementById("mensagem_erro").innerHTML = "RM e/ou senha inválido, tente novamente";
+        document.getElementById("mensagem_erro").style.visibility = "visible";
+        return;
+    }
     if (current_user === false) {;
         document.getElementById("mensagem_erro").innerHTML = "Usuário não existe, tente novamente";
         document.getElementById("mensagem_erro").style.visibility = "visible";
