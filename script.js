@@ -1,14 +1,25 @@
 function checkLoggedIn() {
-    if (localStorage.getItem("current_user") == null) window.location.replace("login.html");
+    if (localStorage.getItem("current_user") == "null") window.location.replace("login.html");
 }
 
-function locateUser(rm) {
+function enterClick(type, next_action, action) {
+    let input = self;
+    input.addEventListener("keydown",function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            eval("document.querySelector(type+next_action)."+action+"()")
+        }
+    })
+}
+
+function locateUser(rm, name) {
     let aux = localStorage.getItem("user_amount");
-    for (let i = 0; i < aux; i++) if (rm == localStorage.getItem("user_rm["+i+"]")) return i;
+    for (let i = 0; i < aux; i++) if (rm == localStorage.getItem("user_rm["+i+"]") || name == localStorage.getItem("user_name["+i+"]")) return i;
     return false;
 }
 
 function createUser() {
+    let name = document.getElementById("nome_usuario").value;
     let rm = document.getElementById("rm_usuario").value;
     let password = document.getElementById("senha_usuario").value;
     let aux = localStorage.getItem("user_amount");
@@ -26,13 +37,14 @@ function createUser() {
         document.getElementById("mensagem_erro").style.visibility = "visible";
         return;
     }
-    if (locateUser(rm) === false) {
+    if (locateUser(rm, name) === false) {
         localStorage.setItem("user_rm["+aux+"]", rm);
         localStorage.setItem("user_password["+aux+"]", password);
-        localStorage.setItem("current_user", aux)
+        localStorage.setItem("user_name["+aux+"]", name);
+        localStorage.setItem("current_user", aux);
         aux++;
         localStorage.setItem("user_amount", aux);
-        window.location.replace("index.html")
+        window.location.replace("index.html");
     } else {
         document.getElementById("mensagem_erro").innerHTML = "Conta já existe, tente novamente";
         document.getElementById("mensagem_erro").style.visibility = "visible";
@@ -40,10 +52,10 @@ function createUser() {
 }
 
 function logIn() {
-    let rm = document.getElementById("rm_usuario").value;
+    let input = document.getElementById("rm_usuario").value;
     let password = document.getElementById("senha_usuario").value;
-    let current_user = locateUser(rm);
-    if (rm.length == 0 || password.length == 0) {
+    let current_user = locateUser(input, input);
+    if (input.length == 0 || password.length == 0) {
         document.getElementById("mensagem_erro").innerHTML = "RM e/ou senha inválido, tente novamente";
         document.getElementById("mensagem_erro").style.visibility = "visible";
         return;
