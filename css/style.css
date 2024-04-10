@@ -6,39 +6,34 @@
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
+
 .horizontal_center {
     display: flex;
     justify-content: center;
 }
+
 .caixa {
-    background-color: rgb(65, 65, 65);
+    background-color: #414141;
     border-radius: 30px;
     padding: 20px;
 }
-.label {
-    font-size: 20px
-}
-.linha { 
-    max-width: 100%;
-    padding: 7px 0;
-}
-.botao {
+
+input.botao {
     font-size: 24px;
     border-radius: 15px;
     border-style: solid;
     transition: all 0.3s;
 }
-.mensagem {
-    font-size: 12px;
-    text-decoration: none;
-}
+
 input {
     max-width: 100%;
 }
-.botao:hover {
+
+input.botao:hover {
     background-color: #848484;
     border-color: #848484;
 }
-.botao:active {
+
+input.botao:active {
     background-color: #444;
 }
