@@ -83,7 +83,7 @@
         </style>
         <script>
             function checkLoggedIn() { //inicializa o site de acordo com o estado do usuário
-                if (sessionStorage.getItem("current_user") == "null") {
+                if (sessionStorage.getItem("current_user") == null) {
                     window.location.replace("login.html"); 
                 } else {
                     document.body.style.display = "block";
