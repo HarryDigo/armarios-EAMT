@@ -11,20 +11,23 @@
         <script src="script.js"></script>
         <script>
             function logIn() {
+
                 let input = document.getElementById("rm_usuario").value;
                 let password = document.getElementById("senha_usuario").value;
                 let current_user = locateUser(input, input);
+
                 if (input.length == 0 || password.length == 0) {
                     document.getElementById("mensagem_erro").innerHTML = "RM e/ou senha inválido, tente novamente";
                     document.getElementById("mensagem_erro").style.visibility = "visible";
                     return;
                 }
+                
                 if (current_user === false) {;
                     document.getElementById("mensagem_erro").innerHTML = "Usuário não existe, tente novamente";
                     document.getElementById("mensagem_erro").style.visibility = "visible";
                     return;
                 } else if (password == localStorage.getItem("user_password["+current_user+"]")) {
-                    localStorage.setItem("current_user", current_user);
+                    sessionStorage.setItem("current_user", current_user);
                     window.location.replace("index.html");
                 } else {    
                     document.getElementById("mensagem_erro").innerHTML = "Senha incorreta, tente novamente";

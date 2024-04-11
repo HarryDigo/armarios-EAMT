@@ -11,29 +11,34 @@
         <script src="script.js"></script>
         <script>
             function createUser() {
+
                 let name = document.getElementById("nome_usuario").value;
                 let rm = document.getElementById("rm_usuario").value;
                 let password = document.getElementById("senha_usuario").value;
                 let aux = localStorage.getItem("user_amount");
+
                 if (aux == null) {
                     localStorage.setItem("user_amount", 0);
                     aux = 0;
                 }
+
                 if (rm.length == 0 || password.length == 0) {
                     document.getElementById("mensagem_erro").innerHTML = "RM e/ou senha inválido, tente novamente";
                     document.getElementById("mensagem_erro").style.visibility = "visible";
                     return;
                 }
+
                 if (password.length < 4) {
                     document.getElementById("mensagem_erro").innerHTML = "Senha deve ter mais de 3 caracteres";
                     document.getElementById("mensagem_erro").style.visibility = "visible";
                     return;
                 }
+                
                 if (locateUser(rm, name) === false) {
                     localStorage.setItem("user_rm["+aux+"]", rm);
                     localStorage.setItem("user_password["+aux+"]", password);
                     localStorage.setItem("user_name["+aux+"]", name);
-                    localStorage.setItem("current_user", aux);
+                    sessionStorage.setItem("current_user", aux);
                     aux++;
                     localStorage.setItem("user_amount", aux);
                     window.location.replace("index.html");

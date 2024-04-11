@@ -25,6 +25,10 @@
                 filter: brightness(100%);
             }
 
+            .pagina {
+                width: 100%;
+            }
+
             div.botao {
                 max-width: calc(100% - 63px);
                 width: 100%;
@@ -32,62 +36,205 @@
                 float: right; 
             }
 
+            tr {
+                max-width: 100%;
+            }
+
+            td {
+                padding: 5px;
+                font-weight: bold;
+                color: #44bb44;
+                cursor: default;
+            }
+
+            td.valido {
+                transition: all 0.3s;
+                cursor: pointer;
+            }
+
+            td.ongoing {color: #bbbb44 !important;}
+            td.complete {color: #bb4444 !important;}
+
+            td.valido:hover {
+                scale: 1.1;
+            }
+
+            td.valido:active {
+                scale: 0.9
+            }
+
             .icon:hover {
                 scale: 1.1;
+                cursor: pointer;
             }
 
             .icon:active {
                 scale: 0.9;
             }
+
+            /*bordas da tabela*/
+            table {border-collapse: collapse;}
+            table td{border: 2px solid #666;}
+            table tr:first-child td {border-top: 0;}
+            table tr:last-child td {border-bottom: 0;}
+            table tr td:first-child {border-left: 0;}
+            table tr td:last-child{border-right: 0;}
+
         </style>
         <script>
-            function checkLoggedIn() {
-                if (localStorage.getItem("current_user") == "null") {
+            function checkLoggedIn() { //inicializa o site de acordo com o estado do usuário
+                if (sessionStorage.getItem("current_user") == "null") {
                     window.location.replace("login.html"); 
                 } else {
                     document.body.style.display = "block";
+                    if (localStorage.getItem("user_locker["+sessionStorage.getItem("current_user")+"]") === null) {
+                        selectPage("default");
+                    } else selectPage("menu_principal");
+                    
                 }
             }
 
+            function selectPage(page) { //seleciona a aba da navbar
+                let pages = document.querySelectorAll(".pagina");
+                for (let i = 0; i < pages.length; i++) pages[i].style.display = "none";
+                document.getElementById(page).style.display = "block";
+            }
+
             function logOut() {
-                localStorage.setItem("current_user", null);
+                sessionStorage.removeItem("current_user");
                 window.location.replace("login.html");
+            }
+
+            function tabelaArmarios(x, y) { //cria a tabela e a popula com os parametros adicionais depois
+
+                tabela = document.getElementById("tabela");
+                let linha = [];
+                let cells = [];
+
+                for (let index = 0; index < y; index++) { //cria linnhas das tabelas
+                    linha[index] = document.createElement("tr");
+                    linha[index].style.height = "calc(100%/"+y+")";
+                    tabela.appendChild(linha[index]);
+
+                    for (let index2 = 0; index2 < x; index2++) { //cria celulas da tabela
+                        cells[index * x + index2] = document.createElement("td");
+                        cells[index * x + index2].style.width = "calc(100%/" + x + ")";
+                        cells[index * x + index2].innerText = index * x + index2 + 1;
+                        cells[index * x + index2].setAttribute("onclick", "openForm("+eval(index * x + index2 + 1)+")");
+                        cells[index * x + index2].setAttribute("class", "valido");
+                        linha[index].appendChild(cells[index * x + index2]);
+                    }
+                }
+
+                populateTable(sessionStorage.getItem("current_user")) //população de parametros adicionais
+            }
+
+            function populateTable(current_user) { //popula a tabela com parâmetros adicionais
+
+                cells = document.querySelectorAll("td");
+                if (localStorage.getItem("user_locker["+current_user+"]") !== null || current_user == "block") {
+                    for (let i = 0; i < cells.length; i++) {
+                        cells[i].removeAttribute("class");
+                        cells[i].removeAttribute("onclick");
+                    }
+                    if (current_user !== "block") document.getElementById("formulario_armarios").querySelector("h1").innerText = "Você já tem um armário";
+                }
+
+                for (let i = 0; i < cells.length; i++) {
+                    if (localStorage.getItem("locker_status["+eval(i+1)+"]") == "ongoing") {
+                        cells[i].removeAttribute("class");
+                        cells[i].removeAttribute("onclick");
+                        cells[i].setAttribute("class", "ongoing")
+                    } else if (localStorage.getItem("locker_status["+eval(i+1)+"]") == "complete") {
+                        cells[i].removeAttribute("class");
+                        cells[i].removeAttribute("onclick");
+                        cells[i].setAttribute("class", "complete")
+                    }
+                }
+            }
+
+            function openForm(locker_number) { //abre o formulário
+
+                populateTable("block")
+
+                formulario = document.getElementById("formulario");
+                formulario.querySelector("h1").innerText += "#"+locker_number;
+
+                formulario_armarios = document.getElementById("formulario_armarios");
+                formulario_armarios.querySelector("h1").style.display = "none";
+                formulario_armarios.querySelector("div").style.display = "block";
+                sessionStorage.setItem("selected_locker", locker_number);
+
+
+            }
+
+            function cancelForm() {
+
+                formulario = document.getElementById("formulario");
+                formulario.querySelector("h1").innerText = "Armário escolhido: ";
+                
+                formulario_armarios = document.getElementById("formulario_armarios");
+                formulario_armarios.querySelector("h1").style.display = "block";
+                formulario_armarios.querySelector("div").style.display = "none";
+                document.querySelector("input[name='plano']").checked = false;
+                sessionStorage.removeItem("selected_locker");
+
+                cells = document.querySelectorAll("td");
+                for (let i = 0; i < cells.length; i++) {
+                    cells[i].setAttribute("onclick", "openForm("+eval(i+1)+")");
+                    cells[i].setAttribute("class", "valido")
+                }
+                populateTable()
+                //document.querySelector("input[name='plano']:checked").value; importante para o futuro, manter
+            }
+
+            function confirmForm() { //Essa daqui vai ser tortura, hora de criar todo o sistema de armário :)
+
+                let plano = document.querySelector("input[name='plano']:checked").value;
+                let locker_number = sessionStorage.getItem("selected_locker");
+                let current_user = sessionStorage.getItem("current_user")
+
+                localStorage.setItem("user_locker["+current_user+"]", locker_number);
+                localStorage.setItem("locker_status["+locker_number+"]", "ongoing");
+                localStorage.setItem("locker_plan["+locker_number+"]", plano)
+                cancelForm();
+                populateTable(current_user);
             }
         </script>
         
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     </head>
-    <body onload="checkLoggedIn()" style="display: none;">
+    <body onload="checkLoggedIn();tabelaArmarios(8, 7)" style="display: none;">
         <div class="navBar"> <!--Barra de navegação-->
             <div style="display: flex">
                 <div style="display: flex; max-width:1000px; width: 100%;">
 
                     <div class="terco">
 
-                        <img src="img/icon_menu.png" class="icon" style="max-width: 63px; filter: invert();">
+                        <img src="img/icon_menu.png" class="icon" style="max-width: 63px; filter: invert();" onclick="selectPage('menu_principal')">
 
                         <div class="horizontal_center botao">
-                            <input type="button" class="botao" value="Menu principal" style="width: 80%;">
+                            <input type="button" class="botao" value="Menu principal" style="width: 80%;" onclick="selectPage('menu_principal')">
                         </div>
 
                     </div>
                     
                     <div class="terco">
 
-                        <img src="img/icon_locker.png" class="icon" style="max-width: 63px;">
+                        <img src="img/icon_locker.png" class="icon" style="max-width: 63px;" onclick="selectPage('armarios')">
 
                         <div class="horizontal_center botao">
-                            <input type="button" class="botao" value="Armários" style="width: 80%;">
+                            <input type="button" class="botao" value="Armários" style="width: 80%;" onclick="selectPage('armarios')">
                         </div>
                         
                     </div>
                     
                     <div class="terco">
 
-                        <img src="img/icon_qrcode.png" class="icon" style="max-width: 63px; filter: invert(); opacity: 0.7;">
+                        <img src="img/icon_qrcode.png" class="icon" style="max-width: 63px; filter: invert(); opacity: 0.7;" onclick="selectPage('pagamento')">
 
                         <div class="horizontal_center botao">
-                            <input type="button" class="botao" value="Pagamento" style="width: 80%;">
+                            <input type="button" class="botao" value="Pagamento" style="width: 80%;" onclick="selectPage('pagamento')">
                         </div>
                         
                     </div>
@@ -101,7 +248,76 @@
             </div>
         </div>
 
-        <div></div>
+        <div class="center pagina" id="default" style="width: 50%;"> <!--Falta de armário-->
+            <div class="container caixa horizontal_center" style="padding: 50px">
+                <h1 style="margin: 0px 20px 0px 20px">Você ainda não possui um armário</h1>
+            </div>
+        </div>
+
+        <div class="pagina" id="menu_principal"> <!--Menu principal-->
+            Menu principal
+        </div>
+
+        <div class="pagina vertical_center" id="armarios"> <!--Armários-->
+            
+            <div class="vertical_center" style="width: 40%;float: left;">
+                <div class="container caixa" id="formulario_armarios" style="width: 80%; text-align: center; float: right;">
+
+                    <h1>Nenhum armário selecionado</h1>
+
+                    <div style="display: none;">
+                        <div id="formulario" style="padding-left: 30px; padding-right: 30px;">
+
+                            <div style="text-align: center;">
+                                <h1>Armário escolhido: </h1>
+                            </div>
+
+                            <hr>
+        
+                            <div class="horizontal_center">
+                                <h3>Plano: </h3>
+                            </div>
+        
+                            <div class="horizontal_center">
+                                <div>
+                                    <input type="radio" id="anual" name="plano" value="Anual (até 20/12/2024)">
+                                    <span class="label">Anual (até 20/12/2024)</span>
+                                    <input type="radio" id="mensal" name="plano" value="Mensal (até 05/07/2024)">
+                                    <span class="label">Mensal (até 05/07/2024)</span>
+                                </div>
+                            </div>
+        
+                            <div class="horizontal_center">
+                                <div class="linha">
+                                    <span class="label">Valor da compra: R$70,00 </span>
+                                </div>
+                            </div>
+        
+                            <div class="linha" style="display: flex;">
+                                <div class="horizontal_center" style="width: 50%;">
+                                    <input type="button" value="Confirmar" class="botao" onclick="confirmForm()">
+                                </div>
+
+                                <div class="horizontal_center" style="width: 50%;">
+                                    <input type="button" value="Cancelar" class="botao" onclick="cancelForm()">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="horizontal_center" style="width: 60%; float: right;">
+                <div class="container caixa" id="tabela_armarios" style="width: 70%; padding: 0;">
+                    <table id ="tabela" style="width: 100%; text-align: center;font-size: 32px;">
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagina" id="pagamento"> <!--Pagamento-->
+            Pagamento
+        </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     </body>
