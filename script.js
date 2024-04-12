@@ -3,7 +3,7 @@ function enterClick(type, next_action, action) {
     input.addEventListener("keydown",function(event) {
         if (event.key === "Enter") {
             event.preventDefault();
-            eval("document.querySelector(type+next_action)."+action+"()")
+            eval("document.querySelector(type+next_action)."+action+"()");
         }
     })
 }

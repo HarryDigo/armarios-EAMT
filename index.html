@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Menu principal</title>
+        <title>Armários - ETEC Bento Quirino</title>
         <style>
             @import url(css/style.css);
 
@@ -11,6 +11,7 @@
                 position: sticky;
                 background-color: #414141;    
                 padding: 10px;
+                z-index: 1;
             }
 
             .terco {
@@ -81,31 +82,46 @@
             table tr td:last-child{border-right: 0;}
 
         </style>
-        <script>
-            function checkLoggedIn() { //inicializa o site de acordo com o estado do usuário
-                if (sessionStorage.getItem("current_user") == null) {
+        <script> // TUDO ACABADO :)
+            function checkLoggedIn() { //inicializa o site de acordo com o estado do usuário ACABADO
+                let current_user = sessionStorage.getItem("current_user");
+                if (current_user == null) {
                     window.location.replace("login.html"); 
                 } else {
                     document.body.style.display = "block";
-                    if (localStorage.getItem("user_locker["+sessionStorage.getItem("current_user")+"]") === null) {
-                        selectPage("default");
-                    } else selectPage("menu_principal");
-                    
+                    selectPage("menu_principal");
                 }
             }
 
-            function selectPage(page) { //seleciona a aba da navbar
+            function selectPage(page) { //seleciona a aba da navbar ACABADO
                 let pages = document.querySelectorAll(".pagina");
+                let current_user = sessionStorage.getItem("current_user");
                 for (let i = 0; i < pages.length; i++) pages[i].style.display = "none";
-                document.getElementById(page).style.display = "block";
+                switch (page) {
+
+                    case "menu_principal":
+                        if (localStorage.getItem("user_locker["+current_user+"]") === null) {
+                            document.getElementById("menu_default").style.display = "block";
+                        } else document.getElementById(page).style.display = "block";
+                        break;
+
+                    case "pagamento": 
+                        let user_locker = localStorage.getItem("user_locker["+current_user+"]"); 
+                        if (localStorage.getItem("locker_status["+user_locker+"]") !== "ongoing") {
+                            document.getElementById("pagamento_default").style.display = "block";
+                        } else document.getElementById(page).style.display = "block";
+                        break;
+                    
+                    default: document.getElementById(page).style.display = "block";
+                }
             }
 
-            function logOut() {
+            function logOut() { //simples e ACABADO
                 sessionStorage.removeItem("current_user");
                 window.location.replace("login.html");
             }
 
-            function tabelaArmarios(x, y) { //cria a tabela e a popula com os parametros adicionais depois
+            function createTable(x, y) { //cria a tabela e a popula com os parametros adicionais depois ACABADO
 
                 tabela = document.getElementById("tabela");
                 let linha = [];
@@ -126,10 +142,10 @@
                     }
                 }
 
-                populateTable(sessionStorage.getItem("current_user")) //população de parametros adicionais
+                populateTable(sessionStorage.getItem("current_user")); //população de parametros adicionais
             }
 
-            function populateTable(current_user) { //popula a tabela com parâmetros adicionais
+            function populateTable(current_user) { //popula a tabela com parâmetros adicionais ACABADO
 
                 cells = document.querySelectorAll("td");
                 if (localStorage.getItem("user_locker["+current_user+"]") !== null || current_user == "block") {
@@ -137,25 +153,26 @@
                         cells[i].removeAttribute("class");
                         cells[i].removeAttribute("onclick");
                     }
-                    if (current_user !== "block") document.getElementById("formulario_armarios").querySelector("h1").innerText = "Você já tem um armário";
+                    if (current_user !== "block") document.getElementById("armario_status").innerText = "Você já tem um armário";
                 }
 
                 for (let i = 0; i < cells.length; i++) {
-                    if (localStorage.getItem("locker_status["+eval(i+1)+"]") == "ongoing") {
-                        cells[i].removeAttribute("class");
-                        cells[i].removeAttribute("onclick");
-                        cells[i].setAttribute("class", "ongoing")
-                    } else if (localStorage.getItem("locker_status["+eval(i+1)+"]") == "complete") {
-                        cells[i].removeAttribute("class");
-                        cells[i].removeAttribute("onclick");
-                        cells[i].setAttribute("class", "complete")
+                    switch (localStorage.getItem("locker_status["+eval(i+1)+"]")) {
+                        case "ongoing":
+                            cells[i].removeAttribute("class");
+                            cells[i].removeAttribute("onclick");
+                            cells[i].setAttribute("class", "ongoing");
+                            break;
+                        case "complete": 
+                            cells[i].removeAttribute("class");
+                            cells[i].removeAttribute("onclick");
+                            cells[i].setAttribute("class", "complete");
                     }
                 }
             }
 
-            function openForm(locker_number) { //abre o formulário
-
-                populateTable("block")
+            function openForm(locker_number) { //abre o formulário ACABADO
+                populateTable("block");
 
                 formulario = document.getElementById("formulario");
                 formulario.querySelector("h1").innerText += "#"+locker_number;
@@ -164,11 +181,9 @@
                 formulario_armarios.querySelector("h1").style.display = "none";
                 formulario_armarios.querySelector("div").style.display = "block";
                 sessionStorage.setItem("selected_locker", locker_number);
-
-
             }
 
-            function cancelForm() {
+            function cancelForm() { //fecha o formulário ACABADO
 
                 formulario = document.getElementById("formulario");
                 formulario.querySelector("h1").innerText = "Armário escolhido: ";
@@ -182,29 +197,75 @@
                 cells = document.querySelectorAll("td");
                 for (let i = 0; i < cells.length; i++) {
                     cells[i].setAttribute("onclick", "openForm("+eval(i+1)+")");
-                    cells[i].setAttribute("class", "valido")
+                    cells[i].setAttribute("class", "valido");
                 }
-                populateTable()
+                populateTable();
                 //document.querySelector("input[name='plano']:checked").value; importante para o futuro, manter
             }
 
-            function confirmForm() { //Essa daqui vai ser tortura, hora de criar todo o sistema de armário :)
+            function confirmForm() { //Essa daqui vai ser tortura, hora de criar todo o sistema de armário :) ACABADO (eu acho) ACABADO
+
+                try {
+                    let plano = document.querySelector("input[name='plano']:checked").value;
+                } catch (e) {
+                    alert("Escolha um plano no formulário");
+                    return;
+                }
 
                 let plano = document.querySelector("input[name='plano']:checked").value;
                 let locker_number = sessionStorage.getItem("selected_locker");
-                let current_user = sessionStorage.getItem("current_user")
+                let current_user = sessionStorage.getItem("current_user");
 
                 localStorage.setItem("user_locker["+current_user+"]", locker_number);
                 localStorage.setItem("locker_status["+locker_number+"]", "ongoing");
-                localStorage.setItem("locker_plan["+locker_number+"]", plano)
+                localStorage.setItem("locker_plan["+locker_number+"]", plano);
                 cancelForm();
                 populateTable(current_user);
+            }
+
+            function cancelPayment() { //cancela o pagamento e reinicia os armários ACABADO
+                let current_user = sessionStorage.getItem("current_user");
+                let user_locker = localStorage.getItem("user_locker["+current_user+"]");
+                
+                localStorage.removeItem("locker_plan["+user_locker+"]");
+                localStorage.removeItem("locker_status["+user_locker+"]");
+                localStorage.removeItem("user_locker["+current_user+"]");
+
+                document.getElementById("tabela").innerHTML = "";
+                createTable(8, 7);
+                populateTable(current_user);
+                selectPage("pagamento");
+            }
+            
+            function confirmPayment() { //confirma o pagamento ACABADO
+                let current_user = sessionStorage.getItem("current_user");
+                let user_locker = localStorage.getItem("user_locker["+current_user+"]");
+
+                localStorage.setItem("locker_status["+user_locker+"]", "complete");
+
+                populateTable(current_user);
+                selectPage("pagamento");
+            }
+
+            function loadMenu() { //carrega informações do menu principal ACABADO
+                current_user = sessionStorage.getItem("current_user");
+                user_locker = localStorage.getItem("user_locker["+current_user+"]");
+
+                document.getElementById("user_name").innerText = localStorage.getItem("user_name["+current_user+"]");
+                document.getElementById("user_rm").innerText += " "+localStorage.getItem("user_rm["+current_user+"]");
+                document.getElementById("locker_plan").innerText += " "+localStorage.getItem("locker_plan["+user_locker+"]");
+
+                document.getElementById("user_locker").innerText += user_locker;
+                switch(localStorage.getItem("locker_status["+user_locker+"]")) {
+                    case "ongoing": document.getElementById("locker_status").innerText += " Pendente"; break;
+                    case "complete": document.getElementById("locker_status").innerText += " Feito"; break;
+                }
             }
         </script>
         
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     </head>
-    <body onload="checkLoggedIn();tabelaArmarios(8, 7)" style="display: none;">
+    <body onload="checkLoggedIn(); createTable(8, 7); loadMenu()" style="display: none;">
         <div class="navBar"> <!--Barra de navegação-->
             <div style="display: flex">
                 <div style="display: flex; max-width:1000px; width: 100%;">
@@ -248,14 +309,57 @@
             </div>
         </div>
 
-        <div class="center pagina" id="default" style="width: 50%;"> <!--Falta de armário-->
+        <div class="center pagina" id="menu_default" style="width: 50%;"> <!--Falta de armário-->
             <div class="container caixa horizontal_center" style="padding: 50px">
                 <h1 style="margin: 0px 20px 0px 20px">Você ainda não possui um armário</h1>
             </div>
         </div>
 
-        <div class="pagina" id="menu_principal"> <!--Menu principal-->
-            Menu principal
+        <div class="center pagina" id="pagamento_default" style="width: 50%;"> <!--Falta de pagamento-->
+            <div class="container caixa horizontal_center" style="padding: 50px">
+                <h1 style="margin: 0px 20px 0px 20px">Nenhum pagamento está pendente</h1>
+            </div>
+        </div>
+
+        <div class="pagina vertical_center" id="menu_principal" style="padding: 0 5%;"> <!--Menu principal-->
+            
+            <div class="vertical_center" style="width: 40%;float: left;">
+                <div class="container caixa" style="width: 80%; text-align: center; float: right;">
+                    <div style="padding: 0 30px;">
+                        <img src="img/icon_user.png" alt="" style="filter: invert(); opacity: 0.6; margin: 20px 0 20px 0; max-width: 100%;">
+                    
+                        <h1 id="user_name"></h1>
+
+                        <hr>
+
+                        <h2 id="user_rm">RM:</h2>
+
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="horizontal_center" style="width: 55%; float: right;">
+                <div class="container caixa" id="tabela_armarios" style="width: 70%;">
+                    <div style="padding: 0 30px;">
+                        <h1>Informações do armário</h1>
+
+                        <hr>
+
+                        <h3 id="user_locker">Número do armário: #</h3>
+                        
+                        <hr>
+
+                        <h3 id="locker_status">Status do pagamento:</h3>
+
+                        <hr>
+
+                        <h3 id="locker_plan">Plano: </h3>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="pagina vertical_center" id="armarios"> <!--Armários-->
@@ -263,7 +367,7 @@
             <div class="vertical_center" style="width: 40%;float: left;">
                 <div class="container caixa" id="formulario_armarios" style="width: 80%; text-align: center; float: right;">
 
-                    <h1>Nenhum armário selecionado</h1>
+                    <h1 id="armario_status">Nenhum armário selecionado</h1>
 
                     <div style="display: none;">
                         <div id="formulario" style="padding-left: 30px; padding-right: 30px;">
@@ -280,10 +384,10 @@
         
                             <div class="horizontal_center">
                                 <div>
-                                    <input type="radio" id="anual" name="plano" value="Anual (até 20/12/2024)">
-                                    <span class="label">Anual (até 20/12/2024)</span>
-                                    <input type="radio" id="mensal" name="plano" value="Mensal (até 05/07/2024)">
-                                    <span class="label">Mensal (até 05/07/2024)</span>
+                                    <input type="radio" id="anual" name="plano" value="Anual (vence 20/12/2024)">
+                                    <span class="label">Anual (vence 20/12/2024)</span>
+                                    <input type="radio" id="mensal" name="plano" value="Semestral (vence 05/07/2024)">
+                                    <span class="label">Semestral (vence 05/07/2024)</span>
                                 </div>
                             </div>
         
@@ -315,8 +419,46 @@
             </div>
         </div>
 
-        <div class="pagina" id="pagamento"> <!--Pagamento-->
-            Pagamento
+        <div class="pagina vertical_center" id="pagamento"> <!--Pagamento-->
+
+            <div class="vertical_center" style="width: 50%; float: left; /*background-color: #ff0000;*/">
+                <div class="container caixa" style="padding-left: 30px; padding-right: 30px; width: 80%; float: right; text-align: center;">
+
+                    <h1>Aqui viria um formulário de pagamento por cartão</h1>
+
+                    <hr>
+
+                    <div class="linha" style="display: flex;">
+                        <div class="horizontal_center" style="width: 50%;">
+                            <input type="button" value="Confirmar" class="botao" onclick="confirmPayment()">
+                        </div>
+
+                        <div class="horizontal_center" style="width: 50%;">
+                            <input type="button" value="Cancelar" class="botao" onclick="cancelPayment()">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="horizontal_center" style="width: 50%; float: right; /*background-color: #00ff00;*/">
+                <div style="width: 40%;">
+
+                    <div class="container caixa" style="text-align: center;">
+
+                        <h1>Pix</h1>
+
+                        <hr>
+
+                        <div style="padding: 20px; width: 100%; background-color: white; border-radius: 30px;">
+                            <img src="img/qr_code.png" style="max-width: 100%;">
+                        </div>
+                        
+                        <hr>
+                        <span style="font-size: 12px;">Código: dcta478j-196l-03fm-t6gh-4298er7845m2</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
