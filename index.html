@@ -221,6 +221,7 @@
                 localStorage.setItem("locker_plan["+locker_number+"]", plano);
                 cancelForm();
                 populateTable(current_user);
+                loadMenu();
             }
 
             function cancelPayment() { //cancela o pagamento e reinicia os armários ACABADO
@@ -245,17 +246,23 @@
 
                 populateTable(current_user);
                 selectPage("pagamento");
+                loadMenu();
             }
 
             function loadMenu() { //carrega informações do menu principal ACABADO
                 current_user = sessionStorage.getItem("current_user");
                 user_locker = localStorage.getItem("user_locker["+current_user+"]");
+            
+                document.getElementById("user_locker").innerText = "Número do armário: #"
+                document.getElementById("user_rm").innerText = "RM:"
+                document.getElementById("locker_plan").innerText = "Plano:"
+                document.getElementById("locker_status").innerText = "Status do pagamento:"
 
+                document.getElementById("user_locker").innerText += user_locker;
                 document.getElementById("user_name").innerText = localStorage.getItem("user_name["+current_user+"]");
                 document.getElementById("user_rm").innerText += " "+localStorage.getItem("user_rm["+current_user+"]");
                 document.getElementById("locker_plan").innerText += " "+localStorage.getItem("locker_plan["+user_locker+"]");
 
-                document.getElementById("user_locker").innerText += user_locker;
                 switch(localStorage.getItem("locker_status["+user_locker+"]")) {
                     case "ongoing": document.getElementById("locker_status").innerText += " Pendente"; break;
                     case "complete": document.getElementById("locker_status").innerText += " Feito"; break;
